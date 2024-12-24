@@ -1,4 +1,4 @@
-# ethers.js 汇总
+# ethers.js 技巧
 
 ## 1. 基本概念
 
@@ -29,21 +29,21 @@ provider = new ethers.JsonRpcProvider("YOUR_INFURA_URL");
 ##### 主要功能划分
 
 - 区块链信息: 只读一些区块链公开的信息，包括但不限于以下常用：
-  - getBlockNumber() 最新区块号
+  - `getBlockNumber()` 最新区块号
   ```javascript
   await provider.getBlockNumber(); // 23
   ```
-  - getBlock(blockNumber|"latest") 该区块号信息，继承自区块类
+  - `getBlock(blockNumber|"latest")` 该区块号信息，继承自区块类
 - [账户信息](https://learnblockchain.cn/ethers_v5/api/providers/provider/#Provider--account-methods)
-  - getBalance(address) 查看这个地址的以太币余额
+  - `getBalance(address)` 查看这个地址的以太币余额
 - 交易信息
-  - getTransaction(tradeHash) 获取交易哈希中的交易详情
-  - getTransactionReceipt(tradeHash) 获取此交易哈希中的交易收据
-  - estimateGas(transaction) 估算执行交易需要的 gas 费
-    - transaction 参数： to: 目标地址 data: 传递的数据
-  - getGasPrice() ： 获取当前网络的 gas 价格 单位 wei
+  - `getTransaction(tradeHash)` 获取交易哈希中的交易详情
+  - `getTransactionReceipt(tradeHash)` 获取此交易哈希中的交易收据
+  - `estimateGas(transaction)` 估算执行交易需要的 gas 费
+    - transaction 参数： `to`: 目标地址 `data`: 传递的数据
+  - `getGasPrice()` ： 获取当前网络的 gas 价格 单位 wei
 - 网络信息： 包括查询当前网络，
-  - getNetwork() ： 获取当前连接的以太坊网络的相关信息
+  - `getNetwork()` ： 获取当前连接的以太坊网络的相关信息
 
 #### 1.3.2 signer
 
@@ -57,7 +57,7 @@ let signer = new ethers.Wallet("YOUR_PRIVATE_KEY", provider);
 signer = await provider.getSigner();
 ```
 
-私钥保护是个问题
+**私钥保护是个问题**
 
 #### 1.3.3 transaction
 
@@ -69,14 +69,14 @@ signer = await provider.getSigner();
 > 智能合约的具象化，和智能合约交互的对象
 
 - 只调只读函数的合约对象： `new ethers.Contract(contractAddress, contractABI, provider);` 第三个参数是 provider
-- 可调读写函数的合约对象： `new ethers.Contract(contarctAddress, abi, wallet);` 第三个参数为 钱包对象
+- 可调读写函数的合约对象： `new ethers.Contract(contractAddress, abi, wallet); `第三个参数为 钱包对象
 
 ## 2 数据对象
 
-- Fragment : 描述函数/事件的结构
-- interface: 合约接口
-- abi: 是 js 和 evm 交互的中间数据结构，可以通过合约对象的 interface 对象生成，每个合约生成 abi 编码只能给自己用，不能传递给其他合约
-- bytecode：主要指 evm 字节码，是 solidity 编译后的产物。 用户签名信息不是字节码。
+- `Fragment` : 描述函数/事件的结构
+- `interface`: 合约接口
+- `abi`: 是 js 和 evm 交互的中间数据结构，可以通过合约对象的 interface 对象生成，每个合约生成 abi 编码只能给自己用，不能传递给其他合约
+- `bytecode`：主要指 evm 字节码，是 solidity 编译后的产物。 用户签名信息不是字节码。
 
 ## 3 基本概念
 
@@ -84,14 +84,17 @@ signer = await provider.getSigner();
 
 在区块链中，"分支"（branch）通常指的是区块链的一个分支路径，也就是说，区块链的历史记录中出现了不同的版本或路径。在区块链的运作中，分支通常发生在以下几种情形：
 
-3.1.1 **硬分叉（Hard Fork）**：
+#### 3.1.1 **硬分叉（Hard Fork）**：
+
 硬分叉是区块链协议规则的重大变化，它导致旧的区块链和新的区块链之间的兼容性丧失。硬分叉可能会导致区块链分裂成两个不同的链，每个链遵循不同的协议规则。例如，比特币和比特币现金（BCH）就曾发生过硬分叉，导致了两个独立的区块链。
 在硬分叉发生后，之前的版本和新的版本将完全分离，两者之间并没有交流或交易选项。通常，新版本继承了老版本的历史交易，而每个版本将会拥有自己的交易历史。
 
-3.1.2 **软分叉（Soft Fork）**：
+#### 3.1.2 **软分叉（Soft Fork）**：
+
 软分叉是协议规则的向后兼容性更新，即新规则和旧规则能够兼容。虽然网络上有不同的节点执行不同的规则，但整体区块链仍然保持在同一条链上。软分叉通常不会导致区块链的分裂，只会导致某些节点不再验证符合新规则的交易或区块。
 
-3.1.3 **临时分支**：
+#### 3.1.3 **临时分支**：
+
 在区块链的正常运作中，当不同的矿工（或验证者）同时挖出或验证了相同高度的区块时，网络可能会暂时出现多个分支。最终，网络会通过一个机制（如工作量证明或权益证明）来选择其中一个链作为“主链”，其他链则会被废弃。例如，比特币的分叉在区块链的正常运行中是暂时的，当网络达成共识后，会只保留最长的链。
 
 **分支的概念**对于区块链的去中心化和容错性至关重要。在网络中分支允许区块链在面对故障、攻击或者升级时保持弹性，但也会引发不同的经济激励问题和社区分歧。
@@ -104,7 +107,18 @@ ethers.js 里面提到的分支就是临时分支
 
 ### 3.3 交易替代
 
-当一笔交易在网络中未及时被挖掘时，用户可能会通过相同的 nonce 发起另一笔交易，这样新的交易可能会替代原有的交易。
+nonce 是以太坊计算从一个地址发送的交易数量的计数， 也就是说每个账户地址都会有自己的专属 nonce 取值
+
+理论上当一笔交易成功后，下一笔交易的 nonce 会在此基础上增加 1， 但是当一笔交易被长时间 pending 的时候，新交易的 nonce 可能会和这笔等待的交易取值相同，如果赶巧了新交易的 gasPrice 比等待的交易小，那就会导致`replacement-transaction-underpriced` 错误。这就是交易替代
+
+**nonce 使用的几条规则**
+
+- nonce 太小，交易会被拒绝
+- 当 nonce 太大，大于当前 nonce，交易会一直处于队列之中
+- 当发送一个比较大的 nonce 值，然后补齐开始 nonce 到那个值之间的 nonce，那么交易依旧可以被执行
+- 交易队列只保存最多 64 个从同一个账户发出的交易，也就是说，如果要批量转账，同一节点不要发出超过 64 笔交易
+- 当某节点 queue 中还有交易，但此时停止 geth 客户端，queue 中的交易会被清除掉
+- 当前 nonce 合适，但是账户余额不足时，会被以太坊拒绝
 
 ### 3.4 事件重新排序
 
@@ -122,7 +136,7 @@ ethers.js 里面提到的分支就是临时分支
 - Gas Price（Gas 价格） 是用户愿意为每单位 Gas 支付的价格，通常以以太坊（ETH）表示。
 - Gas Limit（Gas 限额） 是用户愿意为一笔交易支付的最大 Gas 数量。
 
-交易费用 = Gas 数量（Gas Used）× Gas 价格
+`交易费用 = Gas 数量（Gas Used）× Gas 价格`
 用户可以通过设置 Gas 价格和 Gas 限额来控制他们愿意支付的最大费用。
 矿工会优先处理那些 Gas 价格较高的交易，因为他们从中获得的奖励更多
 
@@ -181,47 +195,43 @@ ethers.js 里面提到的分支就是临时分支
 
 #### 图示
 
-```javascript
+javascript
 +-------------------------------------------------------+
-|                                                       |
-|           +----------------------+                    |
-|           | Block Header         |                    |
-|           +----------------------+                    |
-|           | Version              |                    |
-|           | Previous Block Hash  |                    |
-|           | Merkle Root          |                    |
-|           | Timestamp            |                    |
-|           | Difficulty Target    |                    |
-|           | Nonce                |                    |
-|           +----------------------+                    |
-|                                                       |
-|           +----------------------+                    |
-|           | Transactions         |                    |
-|           +----------------------+                    |
-|           | Transaction 1        |                    |
-|           | Transaction 2        |                    |
-|           | Transaction 3        |                    |
-|           | ...                  |                    |
-|           +----------------------+                    |
-|                                                       |
-|                                                       |
-|           +----------------------+                    |
-|           | Block Hash           |                    |
-|           +----------------------+                    |
-|                                                       |
+| |
+| +----------------------+ |
+| | Block Header | |
+| +----------------------+ |
+| | Version | |
+| | Previous Block Hash | |
+| | Merkle Root | |
+| | Timestamp | |
+| | Difficulty Target | |
+| | Nonce | |
+| +----------------------+ |
+| |
+| +----------------------+ |
+| | Transactions | |
+| +----------------------+ |
+| | Transaction 1 | |
+| | Transaction 2 | |
+| | Transaction 3 | |
+| | ... | |
+| +----------------------+ |
+| |
+| |
+| +----------------------+ |
+| | Block Hash | |
+| +----------------------+ |
+| |
 +-------------------------------------------------------+
-```
 
 ### 3.12 以太坊分层
 
-- 存储层：用于存储以太坊系统运行过程中产生的区块链元数据和系统日志。区块链元数据采用 LevelDB 数据库存储，系统日志由文件系统存储。
-- 数据层：数据层是区块链的核心，主要处理以太坊交易中的各类数据，完成数据的编码、解码，将数据打包成区块，将区块拼接成链式结构，处理区块数据签名并添加时间戳印记，将交易数据构建成 Merkle 树，并计算 Merkle 树根节点的 hash 值等。
-- 网络层：主要实现网络节点的连接和通讯，又称点对点技术（P2P）。
-- 协议层：以太坊提供的供系统各模块相互调用的协议。
-- 共识层：制定区块链的获取货币的机制。比如比特币用的是 POW（Proof of Work 工作量证明机制）：电脑的性能越好，越容易获取到货币奖励。还有 POS（Proof of Stake 权益证明机制）：类似于众筹分红的概念，会根据你持有的货币数量和时间，给持有者发放利息。还有比如超级账本用的是 PBFT（拜赞庭容错）。
-- 激励层：挖矿机制。
-- 合约层：以往的区块链是没有这一层的。所以最初的区块链只能进行交易，而无法用于其他的领域或是进行其他的逻辑处理。但是合约层的出现，使得在其他领域使用区块链成为了现实，比如用于 IOT。以太坊中这部分包括了 EVM（以太坊虚拟机）和智能合约两部分。
-- 应用层：区块链的展示层。如以太坊使用的是 truffle 和 web3-js。区块链的应用层可以是移动端，web 端，或是是融合进现有的服务器，把当前的业务服务器当成应用层。
+- 1.硬件基础设施层：最基本的 P2P（对等）网络的组成，数据之间的共享和存储
+- 2.数据层：区块链通过链表、Merkle 树和数字签名确保数据的安全性、完整性和不可篡改性，依赖密码学和共识机制。
+- 3.网络层：主要实现网络节点的连接和通讯，又称点对点技术（P2P）。
+- 4.共识层：制定区块链的获取货币的机制。比如比特币用的是 POW（Proof of Work 工作量证明机制）：电脑的性能越好，越容易获取到货币奖励。还有 POS（Proof of Stake 权益证明机制）：类似于众筹分红的概念，会根据你持有的货币数量和时间，给持有者发放利息。还有比如超级账本用的是 PBFT（拜赞庭容错）。主要功能就是负责验证区块，对它们进行排序并保证每个人都同意。 上面有信标链
+- 5.应用层：区块链的展示层。如以太坊使用的是 truffle 和 web3-js。区块链的应用层可以是移动端，web 端，或是是融合进现有的服务器，把当前的业务服务器当成应用层。
 
 ### 3.13 信标链
 
@@ -270,7 +280,7 @@ ethers.js 里面提到的分支就是临时分支
 
 ### 3.18 秘钥
 
-助记词 -> 种子 -> 私钥 -> 公钥 -> 钱包地址
+`助记词 -> 种子 -> 私钥 -> 公钥 -> 钱包地址`
 基础概念
 
 - **助记词**： 是恢复加密钱包所需全部信息的一系列英文词汇， 由 12 15 18 或 24 个单词组成，是从一个固定的 2048 长度的单词列表中产生的 相当于银行卡密码 **BIP-39**
@@ -295,9 +305,9 @@ ethers.js 里面提到的分支就是临时分支
 ### 3.20 位数换算
 
 凡是后面标数字的都表示这个数据占多少位
-比如 keccak256 就是 256 位， 1 个位就表示 1 个二进制数据
-8 位表示 1 个字节，keccak256 就是产生一个 32 字节的数据
-在 ethers 世界里，哈希数据都用 16 进制表示， 4 个二进制转为 1 个十六进制数字， 所以 keccak256 产生结果就是一个长度位 64 的十六进制字符串， 也就是 256/4
+比如 `keccak256` 就是 256 位， 1 个位就表示 1 个二进制数据
+8 位表示 1 个字节，`keccak256`就是产生一个 32 字节的数据
+在 ethers 世界里，哈希数据都用 16 进制表示， 4 个二进制转为 1 个十六进制数字， 所以 `keccak256`产生结果就是一个长度位 64 的十六进制字符串， 也就是 256/4
 
 ## 4 算法概念
 
@@ -319,165 +329,9 @@ ethers.js 里面提到的分支就是临时分支
 
 ### 5.2 事件筛选
 
-- filter ： contract.filters['someEventName'] 主要用于从日志中筛选特定的事件， [具体使用方法](https://github.com/WTFAcademy/WTF-Ethers/tree/main/09_EventFilter#%E6%9E%84%E5%BB%BA%E8%BF%87%E6%BB%A4%E5%99%A8)
+- filter ： `contract.filters['someEventName']` 主要用于从日志中筛选特定的事件， [具体使用方法](https://github.com/WTFAcademy/WTF-Ethers/tree/main/09_EventFilter#%E6%9E%84%E5%BB%BA%E8%BF%87%E6%BB%A4%E5%99%A8)
 - topic: 是事件日志的一部分，**事件哈希和 indexed 变量存储在 topics 中，作为索引方便以后搜索；没有 indexed 变量存储在 data 中**。实际业务开发用不到，有 filter 就够了 它帮助定义了事件的 标识符 和 参数。每个 Topic 都是一个特定的 条件，你可以根据它来过滤事件, 可以通过 Log 类或 EventFilter 类获取 topic 列表。 每个智能合约的 topics 组成部分如下：
   - 事件签名哈希
   - 第一个 index 标识（在智能合约声明事件时，会给参数设置 indexed 修饰，最多三个） 索引 1 如果有的话
   - 第二个 index 标识 索引 2 如果有的话
   - 第三个 index 标识 索引 3 如果有的话
-
-# ethers.js 技巧
-
-## 1. 基本使用
-
-### 1.1 数据格式转变
-
-`ethers.js` 提供了一些常用的功能来转换不同单位的数字。
-
-- **将 ETH 转换为 wei**（最小单位）：
-
-  ```javascript
-  ethers.parseEther(value.toString());
-  ```
-
-- **将 wei 转换为 ETH**：
-  ```javascript
-  ethers.formatEther(value.toString());
-  ```
-
-### 1.2 合约相关
-
-#### 1.2.1 合约实例对象
-
-- **获取合约地址**：
-
-  ```javascript
-  const address = await contract.getAddress();
-  ```
-
-- **连接到合约（绑定 signer）**：
-  `connect(signer)` 方法用来将合约与一个 `signer`（即钱包）关联，之后通过该 `signer` 调用合约方法时，合约的 `msg.sender` 就是该钱包的地址。
-  ```javascript
-  const contractWithSigner = contract.connect(signer);
-  ```
-
-### 1.3 各种对象
-
-#### 1.3.1 `provider`
-
-`provider` 是用于读取区块链状态的对象，例如获取账户、交易、区块信息等。它不包含签名信息，所以不能发送交易。
-
-##### 初始化 `provider`
-
-1. **用户安装了 MetaMask**（使用 `window.ethereum` 提供的 provider）：
-
-   ```javascript
-   provider = new ethers.BrowserProvider(window.ethereum);
-   ```
-
-2. **默认 provider**（无法提供 signer）：
-
-   ```javascript
-   provider = ethers.getDefaultProvider();
-   ```
-
-3. **连接到第三方的 JSON-RPC 服务**（例如 Infura）：
-   ```javascript
-   provider = new ethers.JsonRpcProvider("YOUR_INFURA_URL");
-   ```
-
-##### 主要功能划分
-
-- **查询区块链信息**：
-
-  - 获取最新区块号：`provider.getBlockNumber()`
-  - 获取特定区块信息：`provider.getBlock(blockNumber || "latest")`
-
-- **查询账户信息**：
-
-  - 查看地址余额：`provider.getBalance(address)`
-
-- **查询交易信息**：
-
-  - 获取交易详情：`provider.getTransaction(txHash)`
-  - 获取交易收据：`provider.getTransactionReceipt(txHash)`
-  - 估算 gas：`provider.estimateGas(transaction)`
-  - 获取当前 gas 价格：`provider.getGasPrice()`
-
-- **查询网络信息**：
-  - 获取当前网络信息：`provider.getNetwork()`
-
-#### 1.3.2 `signer`
-
-`signer` 封装了与账户交互的操作，通常用于签署交易或消息。签名账户通常包含私钥。
-
-##### 派生方式
-
-- 通过私钥创建一个 `signer`：
-
-  ```javascript
-  let signer = new ethers.Wallet("YOUR_PRIVATE_KEY", provider);
-  ```
-
-- 从 `provider` 获取默认的 signer（通常是连接的用户账户）：
-  ```javascript
-  signer = await provider.getSigner();
-  ```
-
-##### 私钥保护
-
-为了安全，私钥应通过环境变量或安全存储，而不是直接写入代码中。
-
-#### 1.3.3 `transaction`
-
-交易是改变区块链状态的操作，通常包括发送一些 ETH 或调用合约函数，需要支付 gas 费用。
-
-#### 1.3.4 `contract`
-
-`contract` 对象允许与智能合约进行交互。
-
-- **只读合约**（无需发送交易）：
-
-  ```javascript
-  const contract = new ethers.Contract(contractAddress, contractABI, provider);
-  ```
-
-- **读写合约**（需要发送交易，传入钱包对象）：
-  ```javascript
-  const contract = new ethers.Contract(contractAddress, contractABI, wallet);
-  ```
-
----
-
-## 2. Hardhat 使用
-
-### 2.1 单元测试
-
-在 Hardhat 中，`ethers` 被用作智能合约的交互库，可以进行合约部署、交易发送等操作。
-
-#### 2.1.1 获取测试账户
-
-使用 `getSigners()` 方法可以获取一些预设的测试账户，通常包括一个 `owner` 账户和多个用户账户。
-
-```javascript
-[owner, user1, user2] = await ethers.getSigners();
-```
-
-### 2.2 合约相关
-
-#### 2.2.1 部署合约
-
-- **简化的合约部署**（`ethers.deployContract`）：
-
-  ```javascript
-  const counter = await ethers.deployContract('Counter', [param1, param2, ...]); // 合约初始化参数
-  ```
-
-- **标准合约部署**（使用合约工厂）：
-  ```javascript
-  // 获取合约工厂
-  const Counter = await ethers.getContractFactory('Counter');
-  // 部署合约
-  const counter = await Counter.deploy(param1, param2, ...);
-  await counter.waitForDeployment();
-  ```
